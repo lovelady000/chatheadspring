@@ -15,18 +15,26 @@ import android.view.WindowManager.LayoutParams.*
 class WindowManagerContainer : FrameChatHeadContainer {
 
 
-    private var windowManager: WindowManager
+
+    private var mWindowManager: WindowManager
     fun getWindowManager(): WindowManager {
-        if (windowManager == null) {
-            windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        if (mWindowManager == null) {
+            mWindowManager =  getContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
         }
-        return windowManager
+        return mWindowManager
     }
 
     constructor(context: Context) : super(context) {
-        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     }
 
+    override fun setViewX(view: View, xPosition: Int) {
+        view.translationX = xPosition.toFloat()
+    }
+
+    override fun setViewY(view: View, yPosition: Int) {
+        view.translationY = yPosition.toFloat()
+    }
     override fun addContainer(container: View, focusable: Boolean) {
         var containerParams = createContainerLayoutParams(focusable)
         addContainer(container, containerParams)

@@ -8,5 +8,4 @@ import android.widget.FrameLayout
  */
 class HostFrameLayout : FrameLayout {
     constructor(context : Context) : super(context)
-
 }

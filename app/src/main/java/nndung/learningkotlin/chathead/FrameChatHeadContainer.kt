@@ -9,26 +9,31 @@ import android.widget.FrameLayout
  * Created by nndun on 7/26/2017.
  */
 open abstract class FrameChatHeadContainer : IChatHeadContainer {
-    private var frameLayout: HostFrameLayout
-    var context: Context
+    private var mFrameLayout: HostFrameLayout
+    private var mContext: Context
+
 
     private lateinit var manager : IChatHeadManager
 
     constructor(context: Context) {
-        this.context = context
-        frameLayout = HostFrameLayout(context)
+        this.mContext = context
+        mFrameLayout = HostFrameLayout(context)
+        mFrameLayout.isFocusable = true
+        mFrameLayout.isFocusableInTouchMode = true
         //Thêm mới một hostFrameLayout để add các chathead
-        addContainer(frameLayout, false)
+        addContainer(mFrameLayout, false)
     }
-
+    fun getContext() : Context {
+        return mContext
+    }
 
 
     override fun onInitialized(chatHeadManager: IChatHeadManager) {
         this.manager = chatHeadManager
     }
     override fun addView(view: View, layoutParams: ViewGroup.LayoutParams) {
-        if (frameLayout != null) {
-            frameLayout.addView(view, layoutParams)
+        if (mFrameLayout != null) {
+            mFrameLayout.addView(view, layoutParams)
         }
     }
     override fun createLayoutParams(height : Int, with : Int, gravity : Int, bottomMargin : Int) : ViewGroup.LayoutParams {
