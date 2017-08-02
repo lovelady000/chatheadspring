@@ -43,6 +43,18 @@ open abstract class FrameChatHeadContainer : IChatHeadContainer {
         return layoutParams
     }
 
+    fun getFrameLayout() : HostFrameLayout {
+        return this.mFrameLayout
+    }
+    override fun setViewX(view: View, xPosition: Int) {
+        view.translationX = xPosition.toFloat()
+
+    }
+
+    override fun setViewY(view: View, yPosition: Int) {
+        view.translationY = yPosition.toFloat()
+    }
+
 
     abstract fun addContainer(container: View, focusable: Boolean)
 }

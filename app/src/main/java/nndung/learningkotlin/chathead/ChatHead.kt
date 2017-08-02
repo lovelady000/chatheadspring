@@ -1,71 +1,126 @@
 package nndung.learningkotlin.chathead
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import android.widget.ImageView
+import com.facebook.rebound.SimpleSpringListener
+import com.facebook.rebound.Spring
+import com.facebook.rebound.SpringListener
+import com.facebook.rebound.SpringSystem
+
+
 
 /**
  * Created by nndun on 7/26/2017.
  */
-class ChatHead : ImageView {
+class ChatHead : ImageView, SpringListener {
 
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+
+    private var isDragging :Boolean = false
     private var mContext : Context
     private var mChatHeadManager : IChatHeadManager
-    constructor(context: Context, chatHeadManager: IChatHeadManager) : super(context) {
+    private var downX: Float = -1f
+    private var downY: Float = -1f
+    private var downTranslationX : Float = -1f
+    private var downTranslationY : Float = -1f
+    private var mSpringSystem : SpringSystem
+    private lateinit var xPositionSpring : Spring
+    private lateinit var xPositisionListener : SpringListener
+    private lateinit var yPositionSpring : Spring
+    private lateinit var yPositisionListener : SpringListener
+
+    constructor(context: Context, chatHeadManager: IChatHeadManager, springSystem: SpringSystem) : super(context) {
         this.mContext = context
         this.mChatHeadManager = chatHeadManager
+        this.mSpringSystem = springSystem
+        initialize()
+    }
+
+    fun initialize() {
+        xPositisionListener = object : SimpleSpringListener() {
+            override fun onSpringUpdate(spring: Spring?) {
+                super.onSpringUpdate(spring)
+                mChatHeadManager.getChatHeadContainer().setViewX(this@ChatHead, spring!!.currentValue.toInt())
+            }
+
+            override fun onSpringAtRest(spring: Spring?) {
+                super.onSpringAtRest(spring)
+            }
+        }
+        xPositionSpring = mSpringSystem.createSpring()
+        xPositionSpring.addListener(xPositisionListener)
+
+        yPositisionListener = object : SimpleSpringListener() {
+            override fun onSpringUpdate(spring: Spring?) {
+                super.onSpringUpdate(spring)
+                mChatHeadManager.getChatHeadContainer().setViewY(this@ChatHead, spring!!.currentValue.toInt())
+            }
+
+            override fun onSpringAtRest(spring: Spring?) {
+                super.onSpringAtRest(spring)
+            }
+        }
+        yPositionSpring = mSpringSystem.createSpring()
+        yPositionSpring.addListener(yPositisionListener)
+
 
     }
 
 
-    private var downX: Float = -1f
-    private var downY: Float = -1f
 
-    @SuppressLint("ClickableViewAccessibility")
+    override fun onSpringUpdate(spring: Spring?) {
+
+    }
+
+    override fun onSpringEndStateChange(spring: Spring?) {
+    }
+
+    override fun onSpringAtRest(spring: Spring?) {
+    }
+
+    override fun onSpringActivate(spring: Spring?) {
+    }
+
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-//        var action: Int = event!!.action
-//        var rawX: Float = event.rawX
-//        var rawY: Float = event.rawY
-//
-//        var offsetX = rawX - downX;
-//        var offsetY = rawY - downY;
-//        when (action) {
-//            MotionEvent.ACTION_DOWN -> {
-//                downX = rawX
-//                downY = rawY
-//                Log.i("DUNGNN", "${this.layoutParams.height}")
-//            }
-//            MotionEvent.ACTION_UP -> {
-//
-//            }
-//            MotionEvent.ACTION_MOVE -> {
-//                val p = WindowManager.LayoutParams(
-//                        // Shrink the window to wrap the content rather than filling the screen
-//                        WindowManager.LayoutParams.WRAP_CONTENT,
-//                        WindowManager.LayoutParams.WRAP_CONTENT,
-//                        // Display it on top of other application windows, but only for the current user
-//                        WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-//                        // Don't let it grab the input focus
-//                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-//                        // Make the underlying application window visible through any transparent parts
-//                        PixelFormat.TRANSLUCENT)
-//                p.gravity = Gravity.TOP or Gravity.LEFT
-//                //p.x = event.rawX.toInt() - ChatHeadConfig.headWidth / 2
-//                //p.y = event.rawY.toInt() - ChatHeadConfig.headHeight / 2
-//
-//
-//                p.x = 500
-//                p.y = 500
-//
-//                //Log.i("DUNGNN","X: ${event.x.toInt()} - Y: ${event.y.toInt()}" )
-//                //Log.i("DUNGNN","rX: ${event.rawX.toInt()} - rY: ${event.rawY.toInt()}" )
-//
-//                val windowManager = this.context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//                windowManager.updateViewLayout(this, p)
-//            }
-//        }
+
+        if(xPositionSpring == null || yPositionSpring == null)
+            return false
+        var horizontalSpring = xPositionSpring
+        var verticalSpring = yPositionSpring
+
+        var action: Int = event!!.action
+        var rawX: Float = event.rawX
+        var rawY: Float = event.rawY
+        var offsetX = rawX - downX
+        var offsetY = rawY - downY
+
+        when (action) {
+            MotionEvent.ACTION_DOWN -> {
+                downX = rawX
+                downY = rawY
+                horizontalSpring.springConfig = SpringConfigsHolder.NOT_DRAGGING
+                verticalSpring.springConfig = SpringConfigsHolder.NOT_DRAGGING
+                downTranslationX = horizontalSpring.currentValue.toFloat()
+                downTranslationY = horizontalSpring.currentValue.toFloat()
+
+            }
+            MotionEvent.ACTION_UP -> {
+                isDragging = false
+            }
+            MotionEvent.ACTION_MOVE -> {
+
+                if(Math.hypot(offsetX.toDouble(), offsetY.toDouble()) > touchSlop) {
+                    isDragging = true
+                }
+                if(isDragging) {
+                    horizontalSpring.currentValue = (downTranslationX  + offsetX).toDouble()
+                    verticalSpring.currentValue = (downTranslationY + offsetY).toDouble()
+                }
+            }
+        }
         Log.i("DUNGNN", "TOUCH")
         return true
     }
