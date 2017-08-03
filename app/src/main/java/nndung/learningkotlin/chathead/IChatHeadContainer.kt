@@ -1,5 +1,6 @@
 package nndung.learningkotlin.chathead
 
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 
@@ -13,4 +14,5 @@ interface IChatHeadContainer {
     fun setViewY(view: View, yPosition: Int)
     fun createLayoutParams(height: Int, width: Int, gravity: Int, bottomMargin: Int): ViewGroup.LayoutParams
     fun onInitialized(chatHeadManager: IChatHeadManager)
+    fun getDisplayMetrics() : DisplayMetrics
 }

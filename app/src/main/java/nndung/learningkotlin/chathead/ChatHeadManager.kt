@@ -1,6 +1,7 @@
 package nndung.learningkotlin.chathead
 
 import android.content.Context
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -12,16 +13,23 @@ import nndung.learningkotlin.R
  * Created by nndun on 7/26/2017.
  */
 class ChatHeadManager : IChatHeadManager {
+    private var mChatHearContainer: IChatHeadContainer
+    private var mSpringSystem: SpringSystem
+    private var mDisplayMetrics: DisplayMetrics
+    private var mChatHeadArrangement : IChatHeadArrangement
 
+    private var mContext: Context
 
-    private var mChatHearContainer : IChatHeadContainer
-    private var mSpringSystem : SpringSystem
-
-    private var mContext : Context
     constructor(context: Context) {
         this.mContext = context
         mChatHearContainer = WindowManagerContainer(context)
         mSpringSystem = SpringSystem.create()
+        mDisplayMetrics = mChatHearContainer.getDisplayMetrics()
+        mChatHeadArrangement = MinimizedArrangement(this@ChatHeadManager)
+    }
+
+    override fun getArrangement(): IChatHeadArrangement {
+        return mChatHeadArrangement
     }
 
     override fun getChatHeadContainer(): IChatHeadContainer {
@@ -30,20 +38,25 @@ class ChatHeadManager : IChatHeadManager {
 
     //Thêm mới 1 chat head vào FRAME
     override fun addChatHead(isSticky: Boolean, animated: Boolean): ChatHead {
-        var chatHead : ChatHead = ChatHead(this.mContext, this,mSpringSystem)
+        var chatHead: ChatHead = ChatHead(this.mContext, this, mSpringSystem)
         chatHead.setOnClickListener {
             Toast.makeText(this.mContext, "Hello", Toast.LENGTH_SHORT).show()
         }
-        var layoutParams : ViewGroup.LayoutParams = mChatHearContainer.createLayoutParams(200,200,Gravity.START or Gravity.TOP,0)
+        var layoutParams: ViewGroup.LayoutParams = mChatHearContainer.createLayoutParams(200, 200, Gravity.START or Gravity.TOP, 0)
         mChatHearContainer.addView(chatHead, layoutParams)
         setDrawable(chatHead)
         return chatHead
     }
 
-    fun setDrawable(chatHead : ChatHead) {
+    fun setDrawable(chatHead: ChatHead) {
         chatHead.setImageResource(R.drawable.image_chat_head)
     }
 
-    private class MotionCaptureView (context: Context): View (context)
+    override fun getDisplayMetrics(): DisplayMetrics {
+        return mDisplayMetrics
+    }
+
+
+    private class MotionCaptureView(context: Context) : View(context)
 
 }

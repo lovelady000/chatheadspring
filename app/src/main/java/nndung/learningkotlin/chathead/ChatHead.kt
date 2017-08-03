@@ -3,12 +3,17 @@ package nndung.learningkotlin.chathead
 import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.ViewConfiguration
 import android.widget.ImageView
 import com.facebook.rebound.SimpleSpringListener
 import com.facebook.rebound.Spring
 import com.facebook.rebound.SpringListener
 import com.facebook.rebound.SpringSystem
+
+
+
+
 
 
 
@@ -27,6 +32,8 @@ class ChatHead : ImageView, SpringListener {
     private var downTranslationX : Float = -1f
     private var downTranslationY : Float = -1f
     private var mSpringSystem : SpringSystem
+
+    private var velocityTracker: VelocityTracker? = null
     private lateinit var xPositionSpring : Spring
     private lateinit var xPositisionListener : SpringListener
     private lateinit var yPositionSpring : Spring
@@ -68,7 +75,12 @@ class ChatHead : ImageView, SpringListener {
 
 
     }
-
+    fun getHorizontalSpring() : Spring {
+        return xPositionSpring
+    }
+    fun getVerticalSpring() : Spring {
+        return yPositionSpring
+    }
 
 
     override fun onSpringUpdate(spring: Spring?) {
@@ -86,8 +98,8 @@ class ChatHead : ImageView, SpringListener {
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
-        if(xPositionSpring == null || yPositionSpring == null)
-            return false
+//        if(xPositionSpring == null || yPositionSpring == null)
+//            return false
         var horizontalSpring = xPositionSpring
         var verticalSpring = yPositionSpring
 
@@ -98,27 +110,54 @@ class ChatHead : ImageView, SpringListener {
         var offsetY = rawY - downY
 
         when (action) {
+            //Bắt đầu tính toán
             MotionEvent.ACTION_DOWN -> {
+                if (velocityTracker == null) {
+                    velocityTracker = VelocityTracker.obtain()
+                } else {
+                    velocityTracker!!.clear()
+
+                }
                 downX = rawX
                 downY = rawY
                 horizontalSpring.springConfig = SpringConfigsHolder.NOT_DRAGGING
                 verticalSpring.springConfig = SpringConfigsHolder.NOT_DRAGGING
                 downTranslationX = horizontalSpring.currentValue.toFloat()
-                downTranslationY = horizontalSpring.currentValue.toFloat()
+                downTranslationY = verticalSpring.currentValue.toFloat()
+                horizontalSpring.setAtRest()
+                verticalSpring.setAtRest()
+                velocityTracker!!.addMovement(event)
 
             }
-            MotionEvent.ACTION_UP -> {
-                isDragging = false
-            }
+            //Sử lý even khi di chuyển
             MotionEvent.ACTION_MOVE -> {
-
+                velocityTracker!!.addMovement(event)
                 if(Math.hypot(offsetX.toDouble(), offsetY.toDouble()) > touchSlop) {
                     isDragging = true
                 }
                 if(isDragging) {
                     horizontalSpring.currentValue = (downTranslationX  + offsetX).toDouble()
                     verticalSpring.currentValue = (downTranslationY + offsetY).toDouble()
+                    velocityTracker!!.computeCurrentVelocity(1000)
                 }
+                //velocityTracker!!.computeCurrentVelocity(1000)
+
+
+            }
+            //Sử lý even khi bỏ tay khỏi màn hình hoặc bị hủy
+            MotionEvent.ACTION_UP , MotionEvent.ACTION_CANCEL-> {
+                val wasDragging = isDragging
+                isDragging = false
+                velocityTracker!!.addMovement(event)
+                velocityTracker!!.computeCurrentVelocity(1000)
+
+                horizontalSpring.springConfig = SpringConfigsHolder.DRAGGING
+                verticalSpring.springConfig = SpringConfigsHolder.DRAGGING
+                val xVelocity = velocityTracker!!.xVelocity.toInt()
+                val yVelocity = velocityTracker!!.yVelocity.toInt()
+                velocityTracker!!.recycle()
+                velocityTracker = null
+                //mChatHeadManager.getArrangement().handleTouchUp(this,xVelocity, yVelocity, wasDragging )
             }
         }
         Log.i("DUNGNN", "TOUCH")

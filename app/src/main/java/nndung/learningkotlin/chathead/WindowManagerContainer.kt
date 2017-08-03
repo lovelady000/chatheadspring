@@ -125,6 +125,7 @@ class WindowManagerContainer : FrameChatHeadContainer {
         getWindowManager().updateViewLayout(view, layoutParams)
     }
 
+
     private class MotionCaptureView(context : Context) : View(context)
 
     inner class MotionCapturingTouchListener : View.OnTouchListener {
