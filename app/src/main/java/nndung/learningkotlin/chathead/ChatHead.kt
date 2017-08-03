@@ -160,7 +160,6 @@ class ChatHead : ImageView, SpringListener {
                 //mChatHeadManager.getArrangement().handleTouchUp(this,xVelocity, yVelocity, wasDragging )
             }
         }
-        Log.i("DUNGNN", "TOUCH")
         return true
     }
 }
