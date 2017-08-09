@@ -5,4 +5,5 @@ package nndung.learningkotlin.chathead
  */
 abstract class IChatHeadArrangement {
     abstract fun handleTouchUp(activeChatHead : ChatHead, xVelocity : Int, yVelocity : Int,  wasDragging : Boolean)
+    abstract fun handleTouchUp(activeChatHead: ChatHead)
 }
