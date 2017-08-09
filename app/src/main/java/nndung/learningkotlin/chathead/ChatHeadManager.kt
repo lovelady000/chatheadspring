@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.facebook.rebound.SpringSystem
 import nndung.learningkotlin.R
+import nndung.learningkotlin.chathead.interfaces.IChatHeadArrangement
+import nndung.learningkotlin.chathead.interfaces.IChatHeadContainer
+import nndung.learningkotlin.chathead.interfaces.IChatHeadManager
 
 /**
  * Created by nndun on 7/26/2017.
@@ -20,6 +23,8 @@ class ChatHeadManager : IChatHeadManager {
 
     private var mContext: Context
 
+    private var listChatHead : ArrayList<ChatHead> = ArrayList()
+
     constructor(context: Context) {
         this.mContext = context
         mChatHearContainer = WindowManagerContainer(context)
@@ -28,6 +33,11 @@ class ChatHeadManager : IChatHeadManager {
         mChatHeadArrangement = MinimizedArrangement(this@ChatHeadManager)
     }
 
+    override fun onClick() {
+        var chatHead = listChatHead.get(0)
+        chatHead.getHorizontalSpring().velocity = -4000.0
+        chatHead.getVerticalSpring().velocity = 0.0
+    }
     override fun getArrangement(): IChatHeadArrangement {
         return mChatHeadArrangement
     }
@@ -45,6 +55,7 @@ class ChatHeadManager : IChatHeadManager {
         var layoutParams: ViewGroup.LayoutParams = mChatHearContainer.createLayoutParams(200, 200, Gravity.START or Gravity.TOP, 0)
         mChatHearContainer.addView(chatHead, layoutParams)
         setDrawable(chatHead)
+        listChatHead.add(chatHead)
         return chatHead
     }
 

@@ -2,6 +2,8 @@ package nndung.learningkotlin.chathead
 
 import android.util.Log
 import com.facebook.rebound.Spring
+import nndung.learningkotlin.chathead.interfaces.IChatHeadArrangement
+import nndung.learningkotlin.chathead.interfaces.IChatHeadManager
 
 
 /**
@@ -67,7 +69,7 @@ class MinimizedArrangement : IChatHeadArrangement {
         var y :Float = ySpring.currentValue.toFloat()
         var radius = 200f
         Log.i("DUNGNN","X:" + x + " - Y:" + y + "xSpring" + xSpring.getCurrentValue() + ": ySpring:" + ySpring.getCurrentValue() );
-        if( x > maxWidth) {
+        if( x + radius > maxWidth) {
             xSpring.currentValue = xSpring.currentValue - (x + radius -maxWidth)
             checkVelocity(xSpring, ySpring)
         }
@@ -87,7 +89,18 @@ class MinimizedArrangement : IChatHeadArrangement {
             checkVelocity(xSpring, ySpring)
         }
         if( Math.abs(xSpring.velocity )< 900 && Math.abs(ySpring.velocity) < 900 && !activeChatHead.getIsDragging()) {
-            checkVelocity(xSpring, ySpring)
+            //checkVelocity(xSpring, ySpring)
+            if(xSpring.velocity != 0.0)
+            if((xSpring.currentValue + radius ) > maxWidth/2 ) {
+                xSpring.velocity = 3000.0
+
+            } else {
+                xSpring.velocity = -3000.0
+            }
+
+            if(ySpring.velocity != 0.0 ) {
+                ySpring.velocity = 0.0
+            }
         }
 
     }

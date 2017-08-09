@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.FrameLayout
+import nndung.learningkotlin.chathead.interfaces.IChatHeadContainer
+import nndung.learningkotlin.chathead.interfaces.IChatHeadManager
 
 /**
  * Created by nndun on 7/26/2017.

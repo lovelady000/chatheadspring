@@ -6,11 +6,13 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import nndung.learningkotlin.chathead.ChatHeadManager
+import nndung.learningkotlin.chathead.interfaces.IChatHeadManager
 
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var chatHeadManager : IChatHeadManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requirePermisstion()
@@ -38,8 +40,11 @@ class MainActivity : AppCompatActivity() {
 //
 //        //val myView : View = findViewById(R.layout.head_layout)
 //        windowManager.addView(imgView, p)
-        var chatHeadManager : ChatHeadManager = ChatHeadManager(this)
+        chatHeadManager = ChatHeadManager(this)
         chatHeadManager.addChatHead(true, true)
+        button.setOnClickListener {
+            chatHeadManager.onClick()
+        }
 
     }
 

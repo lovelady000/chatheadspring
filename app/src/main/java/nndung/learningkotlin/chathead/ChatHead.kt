@@ -6,8 +6,7 @@ import android.view.VelocityTracker
 import android.view.ViewConfiguration
 import android.widget.ImageView
 import com.facebook.rebound.*
-
-
+import nndung.learningkotlin.chathead.interfaces.IChatHeadManager
 
 
 /**
@@ -67,7 +66,8 @@ class ChatHead : ImageView, SpringListener {
             }
         }
         xPositionSpring = mSpringSystem.createSpring()
-        xPositionSpring.currentValue = 200.0
+       // xPositionSpring.currentValue = 200.0
+        //xPositionSpring.setAtRest()
 
         xPositionSpring.addListener(xPositisionListener)
 
@@ -82,11 +82,9 @@ class ChatHead : ImageView, SpringListener {
             }
         }
         yPositionSpring = mSpringSystem.createSpring()
-        yPositionSpring.currentValue = 200.0
+        //yPositionSpring.currentValue = 200.0
+        //yPositionSpring.setAtRest()
         yPositionSpring.addListener(yPositisionListener)
-
-
-
     }
 
     fun getState(): State {
